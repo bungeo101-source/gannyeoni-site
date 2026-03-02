@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>간녀니 철학관</title>
+
+<style>
+body {
+    margin: 0;
+    background: black;
+    font-family: Arial, sans-serif;
+    color: white;
+    overflow: hidden;
+    text-align: center;
+}
+
+/* 별 배경 */
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 0;
+}
+
+/* 전체 중앙 정렬 */
+.main {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+/* 상단 시간 */
+.clock {
+    font-family: "Courier New", monospace;
+    font-size: 28px;
+    color: #00aaff;
+    text-shadow: 0 0 10px #00aaff,
+                 0 0 20px #00aaff;
+    margin-bottom: 10px;
+}
+
+/* 슬로건 */
+.tags {
+    font-size: 18px;
+    color: #4d7cff;
+    margin-bottom: 30px;
+    letter-spacing: 3px;
+}
+
+/* 프로필 */
+.profile {
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 0 40px red;
+    margin-bottom: 30px;
+}
+
+/* 버튼 */
+button {
+    width: 250px;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 20px;
+    border: none;
+    background: rgba(0,0,0,0.8);
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(255,255,255,0.2);
+    transition: 0.3s;
+}
+
+button:hover {
+    box-shadow: 0 0 25px #4d7cff;
+    transform: scale(1.05);
+}
+
+/* 모바일 최적화 */
+@media (max-width: 768px) {
+
+    .clock {
+        font-size: 22px;
+    }
+
+    .profile {
+        width: 160px;
+        height: 160px;
+    }
+
+    button {
+        width: 80%;
+        font-size: 18px;
+        padding: 18px;
+    }
+
+    .tags {
+        font-size: 16px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="stars"></canvas>
+
+<div class="main">
+
+    <div id="clock" class="clock">00:00:00</div>
+
+    <div class="tags">
+        간녀니즘 · 철학 · 사상
+    </div>
+
+    <img src="profile.png" class="profile">
+
+    <button onclick="window.open('https://discord.gg/Ep5nnDhuQB')">
+        간녀니 철학관
+    </button>
+
+    <button onclick="window.open('https://discord.gg/25zH7baFUz')">
+        간녀니 샵
+    </button>
+
+</div>
+
+<audio id="bgm" src="music.mp3" loop></audio>
+
+<script>
+/* 자동 사운드 */
+const bgm = document.getElementById("bgm");
+function tryPlay() {
+    bgm.play().catch(() => {});
+}
+window.addEventListener("load", tryPlay);
+document.addEventListener("click", tryPlay);
+document.addEventListener("touchstart", tryPlay);
+
+/* 해킹 스타일 시계 */
+function hackerClock() {
+    const clock = document.getElementById("clock");
+    const realTime = new Date().toLocaleTimeString();
+
+    let iterations = 0;
+    const chars = "0123456789:";
+
+    const interval = setInterval(() => {
+        clock.innerText = realTime
+            .split("")
+            .map((char, index) => {
+                if (index < iterations) {
+                    return realTime[index];
+                }
+                return chars[Math.floor(Math.random() * chars.length)];
+            })
+            .join("");
+
+        if (iterations >= realTime.length) {
+            clearInterval(interval);
+        }
+
+        iterations += 1/3;
+    }, 30);
+}
+setInterval(hackerClock, 1000);
+hackerClock();
+
+/* 별 효과 */
+const canvas = document.getElementById("stars");
+const ctx = canvas.getContext("2d");
+
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
+
+let stars = [];
+
+for (let i = 0; i < 150; i++) {
+    stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        radius: Math.random() * 2,
+        speed: Math.random() * 0.5 + 0.2
+    });
+}
+
+function drawStars() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "white";
+
+    stars.forEach(star => {
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        star.y += star.speed;
+        if (star.y > canvas.height) {
+            star.y = 0;
+            star.x = Math.random() * canvas.width;
+        }
+    });
+
+    requestAnimationFrame(drawStars);
+}
+drawStars();
+</script>
+
+</body>
+</html>
